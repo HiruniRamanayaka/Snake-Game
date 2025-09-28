@@ -16,6 +16,16 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
+      position: relative;
+    }
+
+    h1 {
+      margin: 20px 0;
+      font-size: 32px;
+    }
+
+    #canvasWrapper {
+      position: relative;
     }
 
     canvas {
@@ -26,12 +36,28 @@
     }
 
     #scoreDisplay {
-      margin: 10px;
-      font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin: 10px;
+        font-size: 20px;
+    }
+
+    #soundToggle {
+        background: transparent;
+        border: none;
+        font-size: 24px;
+        color: #fff;
+        cursor: pointer;
+        padding: 0;
     }
 
     #controls {
       margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     button, select {
@@ -41,17 +67,56 @@
       border-radius: 6px;
       border: none;
       cursor: pointer;
+      background: #2a2a2a;
+      box-shadow: 4px 4px 8px #1a1a1a, -4px -4px 8px #333;
+      color: #fff;
+      transition: all 0.2s ease;
     }
 
     button:hover {
       background: #444;
       color: #fff;
     }
+
+    button:active {
+      box-shadow: inset 2px 2px 4px #1a1a1a, inset -2px -2px 4px #333;
+    }
+
+    #gameOverOverlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 10;
+    }
+
   </style>
 </head>
 <body>
-  <div id="scoreDisplay">Score: 0</div>
-  <canvas id="gameCanvas" width="400" height="400"></canvas>
+  <h1 style="margin: 20px 0; font-size: 32px;">🐍 Snake Game</h1>
+  <div id="scoreDisplay">
+    <span id="scoreText">Score: 0 | High Score: 0</span>
+    <button id="soundToggle" onclick="toggleSound()">🔊</button>
+  </div>
+
+  <div id="canvasWrapper">
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div id="gameOverOverlay">
+      <p>Game Over!</p>
+      <p id="finalScore"></p>
+      <button onclick="resetGame()">Play Again</button>
+    </div>
+  </div>
+
   <div id="controls">
     <button onclick="resetGame()">Restart</button>
     <select onchange="setSpeed(this.value)">
@@ -71,6 +136,8 @@
     const box = 20;
     let snake, direction, food, score, game, speed = 100, paused = false;
     let directionChanged = false;
+    let highScore = localStorage.getItem("snakeHighScore") || 0;
+    let soundEnabled = true;
 
     function initGame() {
       snake = [{ x: 9 * box, y: 10 * box }];
@@ -80,7 +147,12 @@
         x: Math.floor(Math.random() * 19) * box,
         y: Math.floor(Math.random() * 19) * box
       };
-      document.getElementById("scoreDisplay").textContent = "Score: " + score;
+      updateScoreDisplay();
+      document.getElementById("gameOverOverlay").style.display = "none";
+    }
+
+    function updateScoreDisplay() {
+      document.getElementById("scoreText").textContent = `Score: ${score} | High Score: ${highScore}`;
     }
 
     document.addEventListener("keydown", event => {
@@ -135,8 +207,12 @@
       // Check food collision
       if (snakeX === food.x && snakeY === food.y) {
         score++;
-        eatSound.play();
-        document.getElementById("scoreDisplay").textContent = "Score: " + score;
+        if (soundEnabled) eatSound.play();
+        if (score > highScore) {
+          highScore = score;
+          localStorage.setItem("snakeHighScore", highScore);
+        }
+        updateScoreDisplay();
         food = {
           x: Math.floor(Math.random() * 19) * box,
           y: Math.floor(Math.random() * 19) * box
@@ -153,9 +229,10 @@
         snakeY < 0 || snakeY >= canvas.height ||
         snake.some((segment, index) => index !== 0 && segment.x === newHead.x && segment.y === newHead.y)
       ) {
-        gameOverSound.play();
+        if (soundEnabled) gameOverSound.play();
         clearInterval(game);
-        alert("Game Over! Your Score: " + score);
+        document.getElementById("finalScore").textContent = "Your Score: " + score;
+        document.getElementById("gameOverOverlay").style.display = "flex";
         return;
       }
 
@@ -176,6 +253,11 @@
 
     function togglePause() {
       paused = !paused;
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById("soundToggle").textContent = soundEnabled ? "🔊" : "🔇";
     }
 
     initGame();
