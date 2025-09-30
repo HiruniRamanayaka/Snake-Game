@@ -257,7 +257,8 @@
 
     function toggleSound() {
       soundEnabled = !soundEnabled;
-      document.getElementById("soundToggle").textContent = soundEnabled ? "🔊" : "🔇";
+      const button = document.getElementById("soundToggle");
+      button.textContent = soundEnabled ? "🔊" : "🔇";
     }
 
     initGame();
