@@ -46,7 +46,7 @@ snake-game/
    ```bash
    git clone https://github.com/yourusername/snake-game.git
    cd snake-game
-````
+```
 
 2. Open `index.html` in your browser.
 
