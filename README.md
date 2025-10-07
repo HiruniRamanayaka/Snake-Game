@@ -1,4 +1,3 @@
-```markdown
 # 🐍 Snake Game
 
 A simple and fun Snake Game built with **HTML, CSS, and JavaScript**.  
@@ -29,8 +28,7 @@ Play directly in the browser with features like scoring, difficulty levels, soun
 
 ## 📂 Project Structure
 
-```
-
+```bash
 snake-game/
 │
 ├── index.html        # Main game HTML
@@ -38,8 +36,7 @@ snake-game/
 ├── eat.mp3           # Sound effect for eating food
 ├── gameover.mp3      # Sound effect for game over
 └── README.md         # Project documentation
-
-````
+```
 
 ---
 
@@ -70,5 +67,3 @@ snake-game/
 Hiruni Ramanayaka
 
 ---
-
-```
